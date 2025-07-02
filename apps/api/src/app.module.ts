@@ -5,7 +5,7 @@ import * as path from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmConfigService } from './config';
-
+import {AuthModule} from './modules'
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -16,6 +16,7 @@ import { TypeOrmConfigService } from './config';
       imports: [ConfigModule],
       useClass: TypeOrmConfigService,
     }),
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
