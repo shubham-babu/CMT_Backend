@@ -1,3 +1,5 @@
+import { IAuthCredentials, IBaseResponse, IRequestUser } from "@repo/shared/interfaces";
+
 export interface IAuthWriteService {
-  signIn: ()=>void
+  signUp: (payload: IAuthCredentials)=> Promise<IBaseResponse<IRequestUser>>
 }

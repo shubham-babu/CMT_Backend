@@ -1,12 +1,22 @@
-import { Entity, Column } from 'typeorm';
-import { ROLES } from '@repo/shared/enums';
-import { IsEmail, IsEnum, IsPhoneNumber } from 'class-validator';
+import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
+import { ROLES, USER_STATUS } from '@repo/shared/enums';
+import { IsEmail, IsEnum } from 'class-validator';
 import { BaseEntity } from './../../../type-orm';
+import { Country } from './country.entity';
 
 @Entity()
-export class Users extends BaseEntity {
+export class User extends BaseEntity {
   @Column({ nullable: false })
-  @IsPhoneNumber()
+  countryId: number;
+
+  @OneToOne(() => Country, (country) => country.diaCode)
+  @JoinColumn({
+    name: "countryId",
+    foreignKeyConstraintName: "FK_User_CountryId",
+  })
+  public country: Country;
+
+  @Column({ nullable: false })
   phone: string;
 
   @Column({ nullable: false })
@@ -22,7 +32,11 @@ export class Users extends BaseEntity {
   @Column({ nullable: true })
   supplierId: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   @IsEnum(ROLES)
   role: ROLES;
+
+  @Column({ nullable: false, default: USER_STATUS.UNVERIFIED})
+  @IsEnum(ROLES)
+  status: USER_STATUS;
 }

@@ -1,10 +1,10 @@
 import { ROLES } from "../../enums";
 
-export interface IAuthCredentials {
-  countryId: number
+export interface IRequestUser {
+  id: number;
+  diaCode: string
   phone: string;
   email: string;
-  password: string;
   name: string;
   role: ROLES;
 }
