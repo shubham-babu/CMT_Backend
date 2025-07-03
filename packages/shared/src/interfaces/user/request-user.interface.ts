@@ -1,3 +1,3 @@
-import { IUserResponse } from "./user-response.interface";
+import { IUserResponse } from './user-response.interface';
 
 export interface IRequestUser extends IUserResponse {}

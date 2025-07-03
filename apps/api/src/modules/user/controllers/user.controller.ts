@@ -47,5 +47,4 @@ export class UserController {
   async verifyCode(@Body() payload: VerifyCodeDto) {
     return this.userWriteService.verifyCode(payload);
   }
-
 }

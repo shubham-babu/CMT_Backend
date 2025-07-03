@@ -1,5 +1,5 @@
-import { Country } from "../entities/country.entity";
+import { Country } from '../entities/country.entity';
 
 export interface ICountryReadService {
-  findById: (id:number)=> Promise<Country>
+  findById: (id: number) => Promise<Country>;
 }

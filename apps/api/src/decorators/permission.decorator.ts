@@ -1,4 +1,4 @@
-import { SetMetadata } from "@nestjs/common";
-import { ROLES } from "@repo/shared/enums";
+import { SetMetadata } from '@nestjs/common';
+import { ROLES } from '@repo/shared/enums';
 
-export const Permission = (...roles: ROLES[]) => SetMetadata("roles", roles);
+export const Permission = (...roles: ROLES[]) => SetMetadata('roles', roles);

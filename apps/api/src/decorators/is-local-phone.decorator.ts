@@ -1,11 +1,7 @@
-import {
-  registerDecorator,
-  ValidationOptions,
-  ValidationArguments,
-} from 'class-validator';
+import { registerDecorator, ValidationOptions } from 'class-validator';
 
 export function IsLocalPhone(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: Record<any, any>, propertyName: string) {
     registerDecorator({
       name: 'isLocalPhone',
       target: object.constructor,
@@ -15,7 +11,7 @@ export function IsLocalPhone(validationOptions?: ValidationOptions) {
         ...validationOptions,
       },
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: string) {
           return typeof value === 'string' && /^\d{7,12}$/.test(value);
         },
       },

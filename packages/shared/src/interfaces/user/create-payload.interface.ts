@@ -1,7 +1,7 @@
-import { ROLES } from "../../enums";
+import { ROLES } from '../../enums';
 
 export interface IUserCreatePayload {
-  countryId: number
+  countryId: number;
   phone: string;
   email: string;
   password: string;

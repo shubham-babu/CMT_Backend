@@ -5,12 +5,12 @@ module.exports = {
   root: true,
   ...turboConfig,
   extends: [
-    ...turboConfig.extends,
+    ...(turboConfig?.extends || []),
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
     "prettier",
   ],
-  plugins: [...(turboConfig.plugins || []), "@typescript-eslint/eslint-plugin"],
+  plugins: [...(turboConfig?.plugins || []), "@typescript-eslint/eslint-plugin"],
   parser: "@typescript-eslint/parser",
   ignorePatterns: [
     ".*.js",

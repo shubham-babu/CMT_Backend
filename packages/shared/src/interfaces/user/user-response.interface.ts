@@ -1,11 +1,11 @@
-import { ROLES, USER_STATUS } from "../../enums";
+import { ROLES, USER_STATUS } from '../../enums';
 
 export interface IUserResponse {
   id: number;
-  diaCode: string
+  diaCode: string;
   phone: string;
   email: string;
   name: string;
   role: ROLES;
-  status: USER_STATUS
+  status: USER_STATUS;
 }
