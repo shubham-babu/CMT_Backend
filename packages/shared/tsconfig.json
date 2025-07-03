@@ -7,7 +7,8 @@
     "outDir": "dist",
     "esModuleInterop": true,
     "composite": true,
-    "incremental": true
+    "incremental": true,
+    "tsBuildInfoFile": "./build/cache/tsconfig.tsbuildinfo"
   },
   "include": ["src"],
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
