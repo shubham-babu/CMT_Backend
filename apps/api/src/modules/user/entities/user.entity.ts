@@ -29,7 +29,7 @@ export class User extends BaseEntity {
   @Column({ nullable: false })
   password_hash: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'bigint' })
   supplierId: string;
 
   @Column({ nullable: false })

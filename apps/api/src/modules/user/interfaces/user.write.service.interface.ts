@@ -3,6 +3,8 @@ import {
   IBaseResponse,
   IUserResponse,
   IUserVerifyCodePayload,
+  ILoginPayload,
+  IAuthResponse,
 } from '@repo/shared/interfaces';
 
 export interface IUserWriteService {
@@ -12,4 +14,5 @@ export interface IUserWriteService {
   verifyCode: (
     payload: IUserVerifyCodePayload,
   ) => Promise<IBaseResponse<IUserResponse>>;
+  login: (payload: ILoginPayload) => Promise<IBaseResponse<IAuthResponse>>;
 }

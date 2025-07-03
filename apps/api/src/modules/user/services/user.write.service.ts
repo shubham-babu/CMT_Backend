@@ -3,6 +3,7 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 
 import {
@@ -18,8 +19,13 @@ import {
   IBaseResponse,
   IUserResponse,
   IUserVerifyCodePayload,
+  IAuthResponse,
+  ILoginPayload,
+  IRequestUser,
 } from '@repo/shared/interfaces';
 import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
+
 import {
   COUNTRY_READ_SERVIcE,
   ICountryReadService,
@@ -36,6 +42,34 @@ export class UserWriteService implements IUserWriteService {
     @Inject(COUNTRY_READ_SERVIcE)
     private readonly countryReadService: ICountryReadService,
   ) {}
+
+  private generateTokens(user: User): IAuthResponse {
+    const payload: IRequestUser = {
+      id: user.id,
+      name: user.name,
+      phone: user.phone,
+      role: user.role,
+      diaCode: user.country.diaCode,
+      email: user.email,
+      status: user.status,
+    };
+
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
+    });
+
+    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+    });
+
+    const decoded: Record<string, any> = jwt.decode(accessToken);
+
+    return {
+      accessToken,
+      refreshToken,
+      exp: decoded.exp,
+    };
+  }
 
   public signUp = async (
     payload: IUserCreatePayload,
@@ -101,4 +135,32 @@ export class UserWriteService implements IUserWriteService {
       message: 'User signed up successfully.',
     };
   };
+
+  public async login(
+    payload: ILoginPayload,
+  ): Promise<IBaseResponse<IAuthResponse>> {
+    const { phone, password, diaCode } = payload;
+
+    const user = await this.userReadService.findUserByPhone(phone, diaCode);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials.');
+    }
+    if (user.status != USER_STATUS.ACTIVE) {
+      throw new UnauthorizedException('User not active.');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials.');
+    }
+
+    const tokens = this.generateTokens(user);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Login successful.',
+      data: tokens,
+    };
+  }
 }

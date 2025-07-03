@@ -2,7 +2,7 @@ import { Body, Controller, Inject, Post } from '@nestjs/common';
 import { USER_WRITE_SERVICE, IUserWriteService } from '../interfaces';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Public } from './../../../decorators';
-import { CreateUserDto } from '../dtos';
+import { CreateUserDto, LoginDto } from '../dtos';
 import { VerifyCodeDto } from '../dtos/verify-code-dto';
 
 @Controller('user')
@@ -46,5 +46,21 @@ export class UserController {
   @Public()
   async verifyCode(@Body() payload: VerifyCodeDto) {
     return this.userWriteService.verifyCode(payload);
+  }
+
+  @Post('login')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        phone: { type: 'string' },
+        diaCode: { type: 'string' },
+        password: { type: 'string' },
+      },
+    },
+  })
+  @Public()
+  async login(@Body() payload: LoginDto) {
+    return this.userWriteService.login(payload);
   }
 }
