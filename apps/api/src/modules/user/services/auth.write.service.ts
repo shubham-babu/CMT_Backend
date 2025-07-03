@@ -9,7 +9,7 @@ import {
 import {
   USER_READ_SERVICE,
   IUserReadService,
-  IUserWriteService,
+  IAuthWriteService,
 } from '../interfaces';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -22,6 +22,7 @@ import {
   IAuthResponse,
   ILoginPayload,
   IRequestUser,
+  IResendOTPPayload,
 } from '@repo/shared/interfaces';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
@@ -29,11 +30,14 @@ import * as jwt from 'jsonwebtoken';
 import {
   COUNTRY_READ_SERVIcE,
   ICountryReadService,
-} from './../../country/interfaces';
+} from '../../country/interfaces';
 import { USER_STATUS } from '@repo/shared/enums';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
+import { ITwilioOtpService, TWILIO_OTP_SERVICE } from '../../twilio/interfaces';
 
 @Injectable()
-export class UserWriteService implements IUserWriteService {
+export class AuthWriteService implements IAuthWriteService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -41,7 +45,20 @@ export class UserWriteService implements IUserWriteService {
     private readonly userReadService: IUserReadService,
     @Inject(COUNTRY_READ_SERVIcE)
     private readonly countryReadService: ICountryReadService,
+    @InjectRedis() private readonly redis: Redis,
+    @Inject(TWILIO_OTP_SERVICE)
+    private readonly twilioOptService: ITwilioOtpService,
   ) {}
+
+  private generateOtp = (): string => {
+    return Math.floor(1000 + Math.random() * 9000).toString();
+  };
+  private setOtp = async (phone: string, code: string) => {
+    await this.redis.set(`OTP:${phone}`, code, 'EX', 300);
+  };
+  private getOtp = async (phone: string) => {
+    return await this.redis.get(`OTP:${phone}`);
+  };
 
   private generateTokens(user: User): IAuthResponse {
     const payload: IRequestUser = {
@@ -88,6 +105,9 @@ export class UserWriteService implements IUserWriteService {
       );
     }
 
+    const code = this.generateOtp();
+    await this.setOtp(phone, code);
+    await this.twilioOptService.sendOtp(country.diaCode + phone, code);
     // Hash the password
     const hashedPassword = await bcrypt.hash(payload.password, 10);
 
@@ -107,6 +127,18 @@ export class UserWriteService implements IUserWriteService {
     };
   };
 
+  public resendOtp = async (
+    payload: IResendOTPPayload,
+  ): Promise<IBaseResponse<Record<string, string>>> => {
+    const code = this.generateOtp();
+    await this.setOtp(payload.phone, code);
+    await this.twilioOptService.sendOtp(payload.diaCode + payload.phone, code);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'User signed up successfully.',
+    };
+  };
+
   public verifyCode = async (
     payload: IUserVerifyCodePayload,
   ): Promise<IBaseResponse<IUserResponse>> => {
@@ -121,7 +153,7 @@ export class UserWriteService implements IUserWriteService {
       throw new BadRequestException('User not found.');
     }
 
-    const verifyCode = '9999';
+    const verifyCode = await this.getOtp(phone);
     if (verifyCode !== code) {
       throw new BadRequestException('Invalid code.');
     }

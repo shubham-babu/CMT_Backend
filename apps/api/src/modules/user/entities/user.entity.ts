@@ -1,4 +1,4 @@
-import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, JoinColumn, ManyToOne } from 'typeorm';
 import { ROLES, USER_STATUS } from '@repo/shared/enums';
 import { IsEmail, IsEnum } from 'class-validator';
 import { BaseEntity } from './../../../type-orm';
@@ -9,7 +9,7 @@ export class User extends BaseEntity {
   @Column({ nullable: false })
   countryId: number;
 
-  @OneToOne(() => Country, (country) => country.diaCode)
+  @ManyToOne(() => Country, (country) => country.diaCode)
   @JoinColumn({
     name: 'countryId',
     foreignKeyConstraintName: 'FK_User_CountryId',

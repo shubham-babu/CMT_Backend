@@ -1,19 +1,19 @@
 import { Body, Controller, Inject, Post } from '@nestjs/common';
-import { USER_WRITE_SERVICE, IUserWriteService } from '../interfaces';
+import { AUTH_WRITE_SERVICE, IAuthWriteService } from '../interfaces';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { Public } from './../../../decorators';
-import { CreateUserDto, LoginDto } from '../dtos';
+import { Public } from '../../../decorators';
+import { CreateUserDto, LoginDto, ResendOtpDto } from '../dtos';
 import { VerifyCodeDto } from '../dtos/verify-code-dto';
 
-@Controller('user')
+@Controller('auth')
 @ApiTags('user')
-export class UserController {
+export class AuthController {
   constructor(
-    @Inject(USER_WRITE_SERVICE)
-    private readonly userWriteService: IUserWriteService,
+    @Inject(AUTH_WRITE_SERVICE)
+    private readonly authWriteService: IAuthWriteService,
   ) {}
 
-  @Post('sign-up')
+  @Post('register')
   @ApiBody({
     schema: {
       type: 'object',
@@ -29,10 +29,10 @@ export class UserController {
   })
   @Public()
   async signUp(@Body() user: CreateUserDto) {
-    return this.userWriteService.signUp(user);
+    return this.authWriteService.signUp(user);
   }
 
-  @Post('verify-code')
+  @Post('verify-otp')
   @ApiBody({
     schema: {
       type: 'object',
@@ -44,8 +44,23 @@ export class UserController {
     },
   })
   @Public()
-  async verifyCode(@Body() payload: VerifyCodeDto) {
-    return this.userWriteService.verifyCode(payload);
+  async verifyOtp(@Body() payload: VerifyCodeDto) {
+    return this.authWriteService.verifyCode(payload);
+  }
+
+  @Post('resend-otp')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        phone: { type: 'string' },
+        diaCode: { type: 'string' },
+      },
+    },
+  })
+  @Public()
+  async resendOtp(@Body() payload: ResendOtpDto) {
+    return this.authWriteService.resendOtp(payload);
   }
 
   @Post('login')
@@ -61,6 +76,6 @@ export class UserController {
   })
   @Public()
   async login(@Body() payload: LoginDto) {
-    return this.userWriteService.login(payload);
+    return this.authWriteService.login(payload);
   }
 }
