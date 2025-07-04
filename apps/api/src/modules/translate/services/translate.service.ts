@@ -3,6 +3,7 @@ import { ITranslateService } from '../interfaces';
 import { I18nService, TranslateOptions } from 'nestjs-i18n';
 import { REQUEST_CONTEXT_INTERFACE } from 'src/modules/request-context/interfaces';
 import { RequestContextService } from 'src/modules/request-context/services';
+import { I18nPath } from '../interfaces';
 
 @Injectable()
 export class TranslateService implements ITranslateService {
@@ -13,7 +14,7 @@ export class TranslateService implements ITranslateService {
   ) {}
 
   public translate = async (
-    key: string,
+    key: I18nPath,
     options?: TranslateOptions,
   ): Promise<string> => {
     const resolvedLang = options?.lang || this.reqContext.getLang() || 'en';

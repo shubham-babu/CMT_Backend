@@ -31,10 +31,7 @@ import { I18nModule, QueryResolver, AcceptLanguageResolver } from 'nestjs-i18n';
         path: path.join(__dirname, '/i18n/'),
         watch: true,
       },
-      typesOutputPath: path.join(
-        __dirname,
-        '../src/generated/i18n.generated.ts',
-      ),
+      typesOutputPath: path.join(__dirname, '/generated/i18n.generated.ts'),
       resolvers: [
         { use: QueryResolver, options: ['lang', 'locale'] }, // e.g., ?lang=fr
         AcceptLanguageResolver, // uses Accept-Language header
