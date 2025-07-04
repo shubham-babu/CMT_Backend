@@ -17,7 +17,6 @@ export class TranslateService implements ITranslateService {
     options?: TranslateOptions,
   ): Promise<string> => {
     const resolvedLang = options?.lang || this.reqContext.getLang() || 'en';
-
     return await this.i18n.translate(key, {
       ...options,
       lang: resolvedLang,

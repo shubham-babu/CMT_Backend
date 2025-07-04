@@ -1,0 +1,13 @@
+{
+  "NOT_EMPTY": "{property} cannot be empty",
+  "INVALID_EMAIL": "email is invalid",
+  "INVALID_BOOLEAN": "{property} is not a boolean",
+  "MIN": "{property} with value: \"{value}\" needs to be at least {constraints.0}, ow and {message}",
+  "MAX": "{property} with value: \"{value}\" needs to be less than {constraints.0}, ow and {message}",
+  "PASSWORD": "Password must be 8-16 characters long, include uppercase and lowercase letters, a number, and a special character (@ # ? ]).",
+  "STRING": "{property} is not a string",
+  "POSSITIVE": "{property} is not a possitive",
+  "MAX_LENGTH": "{property} with value: \"{value}\" needs to be less than {constraints.0}, ow and {message}",
+  "ENUM": "{property} should have value from {constraints.0}",
+  "LOCAL_PHONE": "{property} is not a phone number"
+}
