@@ -23,10 +23,9 @@ import {
   ILoginPayload,
   IRequestUser,
   IResendOTPPayload,
+  IRefreshTokenPayload,
 } from '@repo/shared/interfaces';
 import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
-
 import {
   COUNTRY_READ_SERVIcE,
   ICountryReadService,
@@ -35,10 +34,13 @@ import { USER_STATUS } from '@repo/shared/enums';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 import { ITwilioOtpService, TWILIO_OTP_SERVICE } from '../../twilio/interfaces';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthWriteService implements IAuthWriteService {
   constructor(
+    private readonly configService: ConfigService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @Inject(USER_READ_SERVICE)
@@ -48,6 +50,7 @@ export class AuthWriteService implements IAuthWriteService {
     @InjectRedis() private readonly redis: Redis,
     @Inject(TWILIO_OTP_SERVICE)
     private readonly twilioOptService: ITwilioOtpService,
+    private readonly jwtService: JwtService,
   ) {}
 
   private generateOtp = (): string => {
@@ -61,25 +64,19 @@ export class AuthWriteService implements IAuthWriteService {
   };
 
   private generateTokens(user: User): IAuthResponse {
-    const payload: IRequestUser = {
-      id: user.id,
-      name: user.name,
-      phone: user.phone,
-      role: user.role,
-      diaCode: user.country.diaCode,
-      email: user.email,
-      status: user.status,
-    };
+    const payload = this.userReadService.mapUserToResponse(user);
 
-    const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_ACCESS_SECRET'),
+      expiresIn: this.configService.get('JWT_ACCESS_EXPIRES_IN') || '15m',
     });
 
-    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN') || '7d',
+      secret: this.configService.get('JWT_REFRESH_SECRET'),
     });
 
-    const decoded: Record<string, any> = jwt.decode(accessToken);
+    const decoded: Record<string, any> = this.jwtService.decode(accessToken);
 
     return {
       accessToken,
@@ -195,4 +192,23 @@ export class AuthWriteService implements IAuthWriteService {
       data: tokens,
     };
   }
+
+  public refreshTokens = async (
+    payload: IRefreshTokenPayload,
+  ): Promise<IBaseResponse<IAuthResponse>> => {
+    const requestUser: IRequestUser = await this.jwtService.verifyAsync(
+      payload.refreshToken,
+      {
+        secret: process.env.JWT_REFRESH_SECRET,
+      },
+    );
+
+    const user = await this.userReadService.findById(requestUser.id);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Refresh Token generated successfully.',
+      data: this.generateTokens(user),
+    };
+  };
 }

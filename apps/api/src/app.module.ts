@@ -7,6 +7,8 @@ import { ConfigModule } from '@nestjs/config';
 import { RedisConfigService, TypeOrmConfigService } from './config';
 import { UserModule, CountryModule, TwilioModule } from './modules';
 import { RedisModule as NestRedisModule } from '@nestjs-modules/ioredis';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtConfigService } from './config/jwt.config';
 
 @Module({
   imports: [
@@ -21,6 +23,10 @@ import { RedisModule as NestRedisModule } from '@nestjs-modules/ioredis';
     NestRedisModule.forRootAsync({
       imports: [ConfigModule],
       useClass: RedisConfigService,
+    }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useClass: JwtConfigService,
     }),
     UserModule,
     CountryModule,

@@ -2,11 +2,16 @@ import { Body, Controller, Inject, Post } from '@nestjs/common';
 import { AUTH_WRITE_SERVICE, IAuthWriteService } from '../interfaces';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../../decorators';
-import { CreateUserDto, LoginDto, ResendOtpDto } from '../dtos';
+import {
+  CreateUserDto,
+  LoginDto,
+  RefreshTokenDto,
+  ResendOtpDto,
+} from '../dtos';
 import { VerifyCodeDto } from '../dtos/verify-code-dto';
 
 @Controller('auth')
-@ApiTags('user')
+@ApiTags('auth')
 export class AuthController {
   constructor(
     @Inject(AUTH_WRITE_SERVICE)
@@ -77,5 +82,19 @@ export class AuthController {
   @Public()
   async login(@Body() payload: LoginDto) {
     return this.authWriteService.login(payload);
+  }
+
+  @Post('refresh')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        refreshToken: { type: 'string' },
+      },
+    },
+  })
+  @Public()
+  async refresh(@Body() payload: RefreshTokenDto) {
+    return this.authWriteService.refreshTokens(payload);
   }
 }
