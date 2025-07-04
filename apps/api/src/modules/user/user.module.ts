@@ -13,6 +13,7 @@ import { CountryModule } from '../country';
 import { TwilioModule } from '../twilio';
 import { AuthController } from './controllers/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
+import { TanslateModule } from '../translate';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule,
     CountryModule,
     TwilioModule,
+    TanslateModule,
   ],
   controllers: [AuthController],
   providers: [
