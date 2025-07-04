@@ -12,11 +12,13 @@ import { UserReadService } from './services/user.read.service';
 import { CountryModule } from '../country';
 import { TwilioModule } from '../twilio';
 import { AuthController } from './controllers/auth.controller';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     ConfigModule,
+    JwtModule,
     CountryModule,
     TwilioModule,
   ],

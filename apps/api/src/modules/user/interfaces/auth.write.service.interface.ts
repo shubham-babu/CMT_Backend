@@ -6,6 +6,7 @@ import {
   ILoginPayload,
   IAuthResponse,
   IResendOTPPayload,
+  IRefreshTokenPayload,
 } from '@repo/shared/interfaces';
 
 export interface IAuthWriteService {
@@ -19,4 +20,7 @@ export interface IAuthWriteService {
   resendOtp: (
     payload: IResendOTPPayload,
   ) => Promise<IBaseResponse<Record<string, string>>>;
+  refreshTokens: (
+    payload: IRefreshTokenPayload,
+  ) => Promise<IBaseResponse<IAuthResponse>>;
 }
