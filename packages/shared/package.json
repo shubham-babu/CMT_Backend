@@ -25,16 +25,21 @@
     }
   },
   "exports": {
-      "./enums": {
-          "require": "./dist/enums/index.js",
-          "import": "./dist/enums/index.js",
-          "types": "./dist/enums/index.d.ts"
-      },
-      "./interfaces": {
-          "require": "./dist/interfaces/index.js",
-          "import": "./dist/interfaces/index.js",
-          "types": "./dist/interfaces/index.d.ts"
-      }
+    "./enums": {
+        "require": "./dist/enums/index.js",
+        "import": "./dist/enums/index.js",
+        "types": "./dist/enums/index.d.ts"
+    },
+    "./interfaces": {
+        "require": "./dist/interfaces/index.js",
+        "import": "./dist/interfaces/index.js",
+        "types": "./dist/interfaces/index.d.ts"
+    },
+    "./constants": {
+        "require": "./dist/constants/index.js",
+        "import": "./dist/constants/index.js",
+        "types": "./dist/constants/index.d.ts"
+    }
   },
   "dependencies": {
     "@nestjs/mapped-types": "*"

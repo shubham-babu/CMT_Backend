@@ -1,1 +1,1 @@
-export { UserWriteService } from './user.write.service';
+export { AuthWriteService } from './auth.write.service';

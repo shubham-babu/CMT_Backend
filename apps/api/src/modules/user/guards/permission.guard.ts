@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { ROLES } from '@repo/shared/enums';
 import { IS_PUBLIC_KEY } from '../../../decorators';
+import { IRequestUser } from '@repo/shared/interfaces';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
@@ -28,7 +29,7 @@ export class PermissionGuard implements CanActivate {
       context.getHandler(),
     );
     const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    const user: IRequestUser = request.user;
 
     if (!user?.role || !requiredRoles?.includes(user.role)) {
       throw new ForbiddenException(

@@ -18,6 +18,7 @@ export class UserReadService implements IUserReadService {
   ): Promise<User> => {
     return await this.userRepository.findOne({
       where: { phone, country: { diaCode } },
+      relations: ['country'],
     });
   };
 }

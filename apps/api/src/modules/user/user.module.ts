@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities';
-import { UserController } from './controllers';
-import { UserWriteService } from './services';
-import { USER_READ_SERVICE, USER_WRITE_SERVICE } from './interfaces';
+import { AuthWriteService } from './services';
+import { USER_READ_SERVICE, AUTH_WRITE_SERVICE } from './interfaces';
 import { ConfigModule } from '@nestjs/config';
 import { JwtUserGuard } from './guards/jwt-auth.guard';
 import { JwtStrategy } from './jwt.strategy';
@@ -11,12 +10,19 @@ import { APP_GUARD } from '@nestjs/core';
 import { PermissionGuard } from './guards';
 import { UserReadService } from './services/user.read.service';
 import { CountryModule } from '../country';
+import { TwilioModule } from '../twilio';
+import { AuthController } from './controllers/auth.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), ConfigModule, CountryModule],
-  controllers: [UserController],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    ConfigModule,
+    CountryModule,
+    TwilioModule,
+  ],
+  controllers: [AuthController],
   providers: [
-    { provide: USER_WRITE_SERVICE, useClass: UserWriteService },
+    { provide: AUTH_WRITE_SERVICE, useClass: AuthWriteService },
     { provide: USER_READ_SERVICE, useClass: UserReadService },
     JwtStrategy,
     {
@@ -28,6 +34,6 @@ import { CountryModule } from '../country';
       useClass: PermissionGuard,
     },
   ],
-  exports: [JwtStrategy, USER_WRITE_SERVICE, USER_READ_SERVICE],
+  exports: [JwtStrategy, AUTH_WRITE_SERVICE, USER_READ_SERVICE],
 })
 export class UserModule {}
